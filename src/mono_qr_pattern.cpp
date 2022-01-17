@@ -167,8 +167,7 @@ void imageCallback(const sensor_msgs::ImageConstPtr &msg,
   // Marker 3 -> aRuCo ID: 3
 
   std::vector<std::vector<cv::Point3f>> boardCorners;
-std:
-  vector<cv::Point3f> boardCircleCenters;
+  std::vector<cv::Point3f> boardCircleCenters;
   float width = delta_width_qr_center_;
   float height = delta_height_qr_center_;
   float circle_width = delta_width_circles_ / 2.;
@@ -536,11 +535,11 @@ int main(int argc, char **argv) {
 
   string csv_name;
 
-  nh.param("delta_width_circles", delta_width_circles_, 0.5);
-  nh.param("delta_height_circles", delta_height_circles_, 0.4);
-  nh_.param("marker_size", marker_size_, 0.20);
-  nh_.param("delta_width_qr_center_", delta_width_qr_center_, 0.55);
-  nh_.param("delta_height_qr_center_", delta_height_qr_center_, 0.35);
+  nh.param("delta_width_circles", delta_width_circles_, 0.25);
+  nh.param("delta_height_circles", delta_height_circles_, 0.2);
+  nh_.param("marker_size", marker_size_, 0.1);
+  nh_.param("delta_width_qr_center", delta_width_qr_center_, 0.275);
+  nh_.param("delta_height_qr_center", delta_height_qr_center_, 0.175);
   nh_.param("min_detected_markers", min_detected_markers_, 3);
   nh_.param("cluster_tolerance", cluster_tolerance_, 0.05);
   nh_.param("min_cluster_factor", min_cluster_factor_, 2.0 / 3.0);

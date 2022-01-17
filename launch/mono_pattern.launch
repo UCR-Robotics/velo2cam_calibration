@@ -1,19 +1,25 @@
 <launch>
 
-    <arg name="stdout" default="screen" />
-    <arg name="camera_name" default="/mono_camera" />
-    <arg name="image_topic" default="image_color" />
-    <arg name="frame_name" default="mono_camera" />
-    <arg name="sensor_id" default="0" />
+  <arg name="stdout" default="screen" />
+  <arg name="camera_name" default="/camera/color" />
+  <arg name="image_topic" default="image_raw" />
+  <arg name="frame_name" default="camera_color_optical_frame" />
+  <arg name="sensor_id" default="0" />
 
-    <!-- Marker size (side) in meters -->
-    <arg name="marker_size" value="0.2"/>
+  <!-- Marker size (side) in meters -->
+  <arg name="marker_size" value="0.1"/>
 
-    <node pkg="velo2cam_calibration" type="mono_qr_pattern" name="mono_pattern_$(arg sensor_id)" output="$(arg stdout)">
-        <param name="image_topic" value="$(arg camera_name)/$(arg image_topic)" />
-        <param name="cinfo_topic" value="$(arg camera_name)/camera_info" />
-        <param name="marker_size" value="$(arg marker_size)"/>
-    </node>
+  <node pkg="velo2cam_calibration" type="mono_qr_pattern" name="mono_pattern_$(arg sensor_id)" output="$(arg stdout)">
+    <param name="image_topic" value="$(arg camera_name)/$(arg image_topic)" />
+    <param name="cinfo_topic" value="$(arg camera_name)/camera_info" />
+    <!--param name="marker_size" value="$(arg marker_size)"/-->
+    <rosparam>
+      delta_width_qr_center: 0.275
+      delta_height_qr_center: 0.175
+      marker_size: 0.1
+    </rosparam>
+  </node>
 
-    <node pkg="tf" type="static_transform_publisher" name="camera_ros_tf_$(arg sensor_id)" args="0 0 0 -1.57079632679 0 -1.57079632679 rotated_$(arg frame_name) $(arg frame_name) 10"/>
+  <node pkg="tf" type="static_transform_publisher" name="camera_ros_tf_$(arg sensor_id)" args="0 0 0 -1.57079632679 0 -1.57079632679 rotated_$(arg frame_name) $(arg frame_name) 10"/>
+
 </launch>
