@@ -33,7 +33,7 @@
 #include <pcl/segmentation/extract_clusters.h>
 
 #define TARGET_NUM_CIRCLES 4
-#define TARGET_RADIUS 0.12
+#define TARGET_RADIUS 0.06
 #define GEOMETRY_TOLERANCE 0.06
 
 using namespace std;

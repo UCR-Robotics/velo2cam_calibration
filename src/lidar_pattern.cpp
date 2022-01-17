@@ -74,6 +74,13 @@ bool WARMUP_DONE = false;
 void callback(const PointCloud2::ConstPtr &laser_cloud) {
   if (DEBUG) ROS_INFO("[LiDAR] Processing cloud...");
 
+  if (DEBUG) {
+    ROS_INFO_STREAM("[LiDAR] delta_width_circles: " << delta_width_circles_);
+    ROS_INFO_STREAM("[LiDAR] delta_height_circles: " << delta_height_circles_);
+    ROS_INFO_STREAM("[LiDAR] circle_radius: " << circle_radius_);
+    ROS_INFO_STREAM("[LiDAR] rings_count: " << rings_count_);
+  }
+
   pcl::PointCloud<Velodyne::Point>::Ptr velocloud(
       new pcl::PointCloud<Velodyne::Point>),
       velo_filtered(new pcl::PointCloud<Velodyne::Point>),
@@ -121,6 +128,9 @@ void callback(const PointCloud2::ConstPtr &laser_cloud) {
         "[LiDAR] Could not estimate a planar model for the given dataset.");
     return;
   }
+
+  if (DEBUG)
+    ROS_INFO_STREAM("[LiDAR] plane seg inliers: " << inliers->indices.size());
 
   // Copy coefficients to proper object for further filtering
   Eigen::VectorXf coefficients_v(4);
@@ -306,6 +316,9 @@ void callback(const PointCloud2::ConstPtr &laser_cloud) {
     return;
   }
 
+  if (DEBUG)
+    ROS_INFO_STREAM("[LiDAR] num of centroid: " << centroid_candidates->size());
+
   /**
     Geometric consistency check
     At this point, circles' center candidates have been computed
@@ -360,6 +373,17 @@ void callback(const PointCloud2::ConstPtr &laser_cloud) {
         "[LiDAR] Unable to find a candidate set that matches target's "
         "geometry");
     return;
+  }
+
+  if (DEBUG){
+    ROS_INFO_STREAM("[LiDAR] best centroid #1: " << 
+      centroid_candidates->at(groups[best_candidate_idx][0]));
+    ROS_INFO_STREAM("[LiDAR] best centroid #2: " << 
+      centroid_candidates->at(groups[best_candidate_idx][1]));
+    ROS_INFO_STREAM("[LiDAR] best centroid #3: " << 
+      centroid_candidates->at(groups[best_candidate_idx][2]));
+    ROS_INFO_STREAM("[LiDAR] best centroid #4: " << 
+      centroid_candidates->at(groups[best_candidate_idx][3]));
   }
 
   // Build selected centers set
@@ -440,7 +464,7 @@ void callback(const PointCloud2::ConstPtr &laser_cloud) {
     to_send.cloud = ros2_pointcloud;
 
     centers_pub.publish(to_send);
-    if (DEBUG) ROS_INFO("[LiDAR] Pattern centers published");
+    ROS_WARN("[LiDAR] Pattern centers published");
 
     if (save_to_file_) {
       std::vector<pcl::PointXYZ> sorted_centers;
@@ -517,8 +541,8 @@ int main(int argc, char **argv) {
 
   string csv_name;
 
-  nh.param("delta_width_circles", delta_width_circles_, 0.5);
-  nh.param("delta_height_circles", delta_height_circles_, 0.4);
+  nh.param("delta_width_circles", delta_width_circles_, 0.25); // global nh
+  nh.param("delta_height_circles", delta_height_circles_, 0.2); // global nh
   nh_.param("plane_threshold", plane_threshold_, 0.1);
   nh_.param("gradient_threshold", gradient_threshold_, 0.1);
   nh_.param("plane_distance_inliers", plane_distance_inliers_, 0.1);
