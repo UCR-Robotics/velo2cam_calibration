@@ -208,12 +208,10 @@ void callback(const PointCloud2::ConstPtr &laser_cloud) {
   }
 
   // Publishing "pattern_circles" cloud (points belonging to the detected plane)
-  if (DEBUG) {
-    sensor_msgs::PointCloud2 velocloud_ros2;
-    pcl::toROSMsg(*circles_cloud, velocloud_ros2);
-    velocloud_ros2.header = laser_cloud->header;
-    pattern_pub.publish(velocloud_ros2);
-  }
+  sensor_msgs::PointCloud2 velocloud_ros2;
+  pcl::toROSMsg(*circles_cloud, velocloud_ros2);
+  velocloud_ros2.header = laser_cloud->header;
+  pattern_pub.publish(velocloud_ros2);
 
   // Rotate cloud to face pattern plane
   Eigen::Vector3f xy_plane_normal_vector, floor_plane_normal_vector;
@@ -464,7 +462,7 @@ void callback(const PointCloud2::ConstPtr &laser_cloud) {
     to_send.cloud = ros2_pointcloud;
 
     centers_pub.publish(to_send);
-    ROS_WARN("[LiDAR] Pattern centers published");
+    ROS_INFO("[LiDAR] Pattern centers published");
 
     if (save_to_file_) {
       std::vector<pcl::PointXYZ> sorted_centers;
@@ -530,8 +528,8 @@ int main(int argc, char **argv) {
   pcl::console::setVerbosityLevel(pcl::console::L_ALWAYS);
 
   range_pub = nh_.advertise<PointCloud2>("range_filtered_cloud", 1);
+  pattern_pub = nh_.advertise<PointCloud2>("pattern_circles", 1);
   if (DEBUG) {
-    pattern_pub = nh_.advertise<PointCloud2>("pattern_circles", 1);
     rotated_pattern_pub = nh_.advertise<PointCloud2>("rotated_pattern", 1);
     cumulative_pub = nh_.advertise<PointCloud2>("cumulative_cloud", 1);
   }
